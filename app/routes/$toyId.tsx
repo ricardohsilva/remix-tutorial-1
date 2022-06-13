@@ -109,7 +109,7 @@ export default function ToyId() {
                 setSelectedImage(toy.images[0].imageSrc);
             }
         }
-    }, [toy]);
+    }, [toy, selectedImage, setSelectedImage]);
 
     const getSelectedItem = (itemSrc: string): string => {
         if (itemSrc === selectedImage) {
