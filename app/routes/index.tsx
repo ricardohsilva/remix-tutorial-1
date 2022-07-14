@@ -6,10 +6,11 @@ import styled from "@emotion/styled";
 import redisClient from "~/shared/utils/redis";
 
 export const loader: LoaderFunction = async () => {
-  // Get the Cache with the key home:allToys
-  const toysCache = await redisClient.get('home:allToys');
   // Time Before Loading
   const t0 = new Date().getTime();
+
+  // Get the Cache with the key allToys
+  const toysCache = await redisClient.get('allToys');
 
   // If Cache hit, return the cache
   if (toysCache) {
@@ -37,7 +38,7 @@ export const loader: LoaderFunction = async () => {
   const responseTime = `${t1 - t0}ms`;
 
   // Set Cache
-  redisClient.set('home:allToys', JSON.stringify(data), 'EX', 30);
+  redisClient.set('allToys', JSON.stringify(data), 'EX', 30);
 
   // Return Prisma data
   return json({ toys: data, responseTime: responseTime });

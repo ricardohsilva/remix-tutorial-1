@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { CatchData } from "@remix-run/react/transition";
 import { useEffect, useState } from "react";
-import { ActionFunction, Form, json, LoaderFunction, Outlet, redirect, useCatch, useLoaderData } from "remix";
+import { ActionFunction, json, LoaderFunction, Outlet, redirect, useCatch, useLoaderData } from "remix";
 import { db } from "~/db";
 
 const StyledSpacer = styled.div`
@@ -152,11 +152,11 @@ export default function ToyId() {
                         )}
                     </div>
                     <Outlet />
-                    <Form method="post">
+                    <form method="post">
                         <h2>Create a Comment to get a Deal</h2>
                         <input name="comment" placeholder="Comment..." />
                         <button type="submit">Post</button>
-                    </Form>
+                    </form>
                 </StyledToyDetailsWrapper>
             </StyledToyDetailsContainer >
         </>
