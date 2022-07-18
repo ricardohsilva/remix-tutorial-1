@@ -6,43 +6,36 @@ import styled from "@emotion/styled";
 import redisClient from "~/shared/utils/redis";
 
 export const loader: LoaderFunction = async () => {
-  // Time Before Loading
+  
+	// Step 1 - Define a key to store the cache
+	const cacheKey = 'allToys';
+  let dataRecords = [];
   const t0 = new Date().getTime();
 
-  // Get the Cache with the key allToys
-  const toysCache = await redisClient.get('allToys');
+  // Step 2 - Retrieve the cache using the key for all toys
+  const toysCache = await redisClient.get(cacheKey);
 
-  // If Cache hit, return the cache
+  // Step 3 - Check if we have a Cache Hit
   if (toysCache) {
-    // Time After Searching for Cache
-    const t1 = new Date().getTime();
+		// Step 3.A - Use data from cache
+		dataRecords = JSON.parse(toysCache);
+  } else {
+	  // Step 3.B.1 - Use data from the Database
+	  dataRecords = await db.toy.findMany({
+	    include: {
+	      images: true,
+	    },
+	  });
+		// Step 3.B.2 - Set Cache for 30 seconds
+	  redisClient.set(cacheKey, JSON.stringify(dataRecords), 'EX', 30);
+	}
 
-    // Response Time Result
-    const responseTime = `${t1 - t0}ms`;
-
-    // Return Cache data
-    return json({ toys: JSON.parse(toysCache), responseTime: responseTime });
-  }
-
-  // If Cache Miss, Load Data from Prisma
-  const data = await db.toy.findMany({
-    include: {
-      images: true,
-    },
-  });
-
-  // Time After Loading
   const t1 = new Date().getTime();
-
-  // Response Time Result
   const responseTime = `${t1 - t0}ms`;
 
-  // Set Cache
-  redisClient.set('allToys', JSON.stringify(data), 'EX', 30);
-
-  // Return Prisma data
-  return json({ toys: data, responseTime: responseTime });
-};
+  // Step 4 - Return the data
+  return json({ toys: dataRecords, responseTime: responseTime });
+}
 
 const StyledHomeProductContainer = styled.div`
   margin: 1rem 2rem;
